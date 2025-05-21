@@ -13,9 +13,9 @@
             <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
                 <h5 class="text-uppercase">Contacto</h5>
                 <ul class="list-unstyled mb-0">
-                    <li><i class="bi bi-geo-alt-fill"></i> Manzanillo, Colima, México</li>
-                    <li><i class="bi bi-telephone-fill"></i> +52 313 193 2021</li>
-                    <li><i class="bi bi-envelope-fill"></i> decinxsoft@gamail.com</li>
+                    <li><i class="bi bi-linkedin"></i> <a href="https://www.linkedin.com/in/gustavo-aguilar-decinx/" target="_blank"> Gustavo Aguilar </li> </a>
+                    <li><i class="bi bi-envelope-fill"> </i> <a href="mailto:decinxsoft@gmail.com">decinxsoft@gmail.com</a></li>
+                    <li><i class="bi bi-github"></i> </i> <a href="https://github.com/decinx1?tab=overview&from=2025-05-01&to=2025-05-21" target="_blank"> Dicinx1 </li> </a>
                 </ul>
             </div>
 
