@@ -1,9 +1,10 @@
 <?php
-    // LAYOUTS debe apuntar a app/resources/layouts/
-    include_once LAYOUTS . 'main_head.php';
+    // Ubicación: TU_PROYECTO_RAIZ/app/resources/views/home.view.php
 
-    // $d es el objeto datosVista del controlador, ya convertido a objeto por View::render
-    setHeader($d);
+    // 1. Incluir la cabecera
+    include_once LAYOUTS . 'main_head.php';
+    // 2. Llamar a la función que genera el contenido del head y el nav
+    setHeader($d); // $d son los datos pasados por el controlador a View::render()
 ?>
 
 <div class="container" style="margin-top: 20px; background-color: white; padding: 20px;">
@@ -15,9 +16,21 @@
         <p>Usuario: <?= htmlspecialchars($d->ua->username) ?></p>
     <?php endif; ?>
 </div>
+<script>
+    $( function (){
+        console.log("Home view script ejecutado!");
+        // app.previousPosts() // Comentado por ahora si no tienes la lógica del foro
+        // app.lastPost()      // Comentado por ahora
+    })
+</script>
 
 <?php
+    // 3. Simplemente incluye el pie de página.
+    // main_foot.php ya contiene el HTML del footer, los scripts y el cierre de </body></html>
     include_once LAYOUTS . 'main_foot.php';
-    setFooter($d); // $d también está disponible aquí
-    closefooter();
+
+    // ¡¡¡ASEGÚRATE DE ELIMINAR CUALQUIER LLAMADA A setFooter() o closeFooter() DE AQUÍ!!!
+    // Por ejemplo, elimina estas líneas si existen:
+    // setFooter($d); <--- ELIMINAR
+    // closefooter(); <--- ELIMINAR
 ?>
