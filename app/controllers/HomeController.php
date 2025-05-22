@@ -26,22 +26,16 @@
          */
         public function index($params = null){
             // Validar la sesión del usuario
-            // El método sessionValidate() debería devolver un array con información del usuario si está logueado,
-            // o algo como ['sv' => false] si no lo está.
-            $datosDeSesion = SessionController::sessionValidate();
+            $datosDeSesion = \app\controllers\auth\SessionController::sessionValidate(); // Usar el FQCN es más seguro aquí
 
             // Preparar los datos que se pasarán a la vista
             $datosParaLaVista = [
-                // 'ua' (user active/authentication) se usa en main_head.php para mostrar
-                // el nombre de usuario o el enlace de "Iniciar Sesión".
-                // Si sessionValidate() devuelve null, le damos un objeto con 'sv' => 0 (o false).
-                'ua'     => $datosDeSesion ?? (object)['sv' => 0],
-                'title'  => 'Bienvenido a Inventa Fácil', // Título para la etiqueta <title> de la página
-                'url_base' => URL // La URL base definida en config.php, útil para construir enlaces en la vista
+                'ua'         => $datosDeSesion ?? (object)['sv' => 0],
+                'title'      => 'Bienvenido a Inventa Fácil',
+                'url_base'   => URL, // La URL base definida en config.php
+                'active_nav' => 'home'  // <--- ¡AÑADIDO! Esto le dice a main_head.php qué enlace resaltar
             ];
 
-            // Renderizar (mostrar) la vista 'home.view.php' y pasarle los datos.
-            // View::render buscará el archivo en: app/resources/views/home.view.php
             View::render('home', $datosParaLaVista);
         }
     }

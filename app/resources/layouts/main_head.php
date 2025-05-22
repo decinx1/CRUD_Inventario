@@ -66,58 +66,60 @@
             </div>
         </header>
         <nav class="navbar navbar-expand-lg bg-dark bg-gradient mb-3" data-bs-theme="dark">
-            <div class="container-fluid">
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link" aria-current="page" href="<?= URL ?>">
-                                <i class="bi bi-house-fill"></i>
-                                Inicio
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link <?= ($activeNav ?? '') === 'home' ? 'active' : '' ?>" aria-current="page" href="<?= URL ?>">
+                        <i class="bi bi-house-fill"></i>
+                        Inicio
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?= ($activeNav ?? '') === 'equipos' ? 'active' : '' ?>" href="<?= htmlspecialchars($urlBase) ?>equipos">
+                        <i class="bi bi-pc-display"></i>Inventario de Equipos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?= ($activeNav ?? '') === 'personal' ? 'active' : '' ?>" href="<?= URL ?>personal">
+                        <i class="bi bi-person-vcard-fill"></i>
+                        Personal
+                    </a>
+                </li>
+                <?php /* if(isset($ua->sv) && $ua->sv ) : // Si la sesión es válida (ejemplo de cómo podrías añadir más enlaces) ?>
+                    <li class="nav-item">
+                        <a class="nav-link <?= ($activeNav ?? '') === 'otra_seccion' ? 'active' : '' ?>" href="<?= URL ?>otra_seccion">Otra Sección</a>
+                    </li>
+                <?php endif; */ ?>
+            </ul>
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 me-3">
+                <?php if( !(isset($ua->sv) && $ua->sv) ) : // Si no hay sesión válida ?>
+                    <li class="nav-item">
+                        <a href="<?= URL ?>session/iniSession" class="nav-link <?= ($activeNav ?? '') === 'login' ? 'active' : '' ?>">
+                            <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
                         </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="<?= URL ?>equipos">
-                                <i class="bi bi-pc-display"></i>
-                                Inventario Equipos
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="<?= URL ?>personal">
-                            <i class="bi bi-person-vcard-fill"></i>
-                            Personal
-                            </a>
-                        </li>
-                        <?php if(isset($ua->sv) && $ua->sv ) : // Si la sesión es válida ?>
-                            <?php endif ?>
-                    </ul>
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 me-3"> <?php if( !$ua->sv ) : // Si no hay sesión válida ?>
-                        <li class="nav-item">
-                            <a href="<?= URL ?>session/iniSession" class="nav-link btn btn-link"> 
-                                <i class="bi bi-person-circle"></i>
-                                Iniciar Sesión
-                            </a>
-                        </li>
-                        <?php else : // Si hay sesión válida ?>
-                            <li class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle"
-                                    role="button" data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-                                    <i class="bi bi-person-circle"></i> <?= htmlspecialchars($ua->username ?? 'Usuario') ?>
+                    </li>
+                <?php else : // Si hay sesión válida ?>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle"></i> <?= htmlspecialchars($ua->username ?? 'Usuario') ?>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li>
+                                <a href="<?= URL ?>session/logout" class="dropdown-item">
+                                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end"> <li>
-                                        <a href="<?= URL ?>session/logout" class="dropdown-item btn btn-link"> Cerrar Sesión
-                                        </a>
-                                    </li>
-                                </ul>
                             </li>
-                        <?php endif ?>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+                        </ul>
+                    </li>
+                <?php endif; ?>
+            </ul>
+        </div>
+    </div>
+</nav>
     </div>
 <?php
 } // Fin de la función setHeader
