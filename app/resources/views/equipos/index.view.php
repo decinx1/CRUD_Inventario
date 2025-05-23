@@ -1,7 +1,10 @@
 <?php
+    // Ubicación: TU_PROYECTO_RAIZ/app/resources/views/home.view.php
+
     // 1. Incluir la cabecera
     include_once LAYOUTS . 'main_head.php';
-    // $d estará disponible aquí, con $d->title, $d->ua, $d->active_nav, $d->url_base, $d->equipos
+    // 2. Llamar a la función que genera el contenido del head y el nav
+    setHeader($d); // $d son los datos pasados por el controlador a View::render()
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-3 pt-3">

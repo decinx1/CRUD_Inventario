@@ -79,7 +79,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?= ($activeNav ?? '') === 'equipos' ? 'active' : '' ?>" href="<?= htmlspecialchars($urlBase) ?>equipos">
+                    <a class="nav-link <?= ($activeNav ?? '') === 'equipos' ? 'active' : '' ?>" href="<?= URL ?>equipos">
                         <i class="bi bi-pc-display"></i>Inventario de Equipos
                     </a>
                 </li>

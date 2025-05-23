@@ -1,0 +1,21 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Establece la base para las reglas de reescritura.
+    # Si tu Virtual Host (inventafacil.local) apunta directamente a la carpeta 'public',
+    # entonces RewriteBase / es correcto.
+    # Si estuvieras en una subcarpeta de localhost, ej: http://localhost/CRUD_Inventario/app/public/,
+    # entonces sería RewriteBase /CRUD_Inventario/app/public/
+    RewriteBase /
+
+    # Si la URL solicitada NO es un archivo existente en el sistema de archivos
+    RewriteCond %{REQUEST_FILENAME} !-f
+    # Y si la URL solicitada NO es un directorio existente en el sistema de archivos
+    RewriteCond %{REQUEST_FILENAME} !-d
+    # Entonces, reescribe la URL y pásala como el parámetro 'uri' a index.php
+    # ^(.*)$ captura toda la URI solicitada.
+    # index.php?uri=$1 toma esa URI capturada ($1) y la pasa como el valor del parámetro 'uri'.
+    # [L] significa "Last" - si esta regla coincide, no procesar más reglas de reescritura.
+    # [QSA] significa "Query String Append" - si la URL original tenía parámetros GET, se añaden.
+    RewriteRule ^(.*)$ index.php?uri=$1 [L,QSA]
+</IfModule>
