@@ -26,33 +26,45 @@
         <form action="<?= htmlspecialchars($accionUrl) ?>" method="POST" class="needs-validation" novalidate>
             <div class="row g-3">
                 <div class="col-md-6">
-                    <label for="tipo_equipo" class="form-label">Tipo de Equipo <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" id="tipo_equipo" name="tipo_equipo"
-                           value="<?= htmlspecialchars($equipo->tipo_equipo ?? '') ?>" required>
-                    <div class="invalid-feedback">Por favor, ingrese el tipo de equipo.</div>
-                </div>
+    <label for="tipo_equipo" class="form-label">Tipo de Equipo <span class="text-danger">*</span></label>
+    <select class="form-select" id="tipo_equipo" name="tipo_equipo" required
+            data-bs-toggle="tooltip" data-bs-placement="top" title="Seleccione el tipo de equipo. Es obligatorio.">
+        <option value="" <?= (!isset($equipo->tipo_equipo) || $equipo->tipo_equipo == '') ? 'selected' : '' ?>>Seleccione un tipo...</option>
+        <option value="Laptop" <?= (isset($equipo->tipo_equipo) && $equipo->tipo_equipo == 'Laptop') ? 'selected' : '' ?>>Laptop</option>
+        <option value="Desktop" <?= (isset($equipo->tipo_equipo) && $equipo->tipo_equipo == 'Desktop') ? 'selected' : '' ?>>Desktop (PC de Escritorio)</option>
+        <option value="Servidor" <?= (isset($equipo->tipo_equipo) && $equipo->tipo_equipo == 'Servidor') ? 'selected' : '' ?>>Servidor</option>
+        <option value="Monitor" <?= (isset($equipo->tipo_equipo) && $equipo->tipo_equipo == 'Monitor') ? 'selected' : '' ?>>Monitor</option>
+        <option value="Impresora" <?= (isset($equipo->tipo_equipo) && $equipo->tipo_equipo == 'Impresora') ? 'selected' : '' ?>>Impresora</option>
+        <option value="Tablet" <?= (isset($equipo->tipo_equipo) && $equipo->tipo_equipo == 'Tablet') ? 'selected' : '' ?>>Tablet</option>
+        <option value="Otro" <?= (isset($equipo->tipo_equipo) && $equipo->tipo_equipo == 'Otro') ? 'selected' : '' ?>>Otro</option>
+        </select>
+    <div class="invalid-feedback">Por favor, seleccione un tipo de equipo.</div>
+</div>
                 <div class="col-md-6">
                     <label for="marca" class="form-label">Marca <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" id="marca" name="marca"
-                           value="<?= htmlspecialchars($equipo->marca ?? '') ?>" required>
+                            value="<?= htmlspecialchars($equipo->marca ?? '') ?>" required
+                            data-bs-toggle="tooltip" data-bs-placement="top" title="La marca  del equipo es obligatoria.">
                     <div class="invalid-feedback">Por favor, ingrese la marca.</div>
                 </div>
 
                 <div class="col-md-6">
                     <label for="modelo" class="form-label">Modelo <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" id="modelo" name="modelo"
-                           value="<?= htmlspecialchars($equipo->modelo ?? '') ?>" required>
+                                value="<?= htmlspecialchars($equipo->modelo ?? '') ?>" required
+                                data-bs-toggle="tooltip" data-bs-placement="top" title="El modelo  del equipo es obligatoria.">
                     <div class="invalid-feedback">Por favor, ingrese el modelo.</div>
                 </div>
                 <div class="col-md-6">
                     <label for="numero_serie" class="form-label">Número de Serie</label>
                     <input type="text" class="form-control" id="numero_serie" name="numero_serie"
-                           value="<?= htmlspecialchars($equipo->numero_serie ?? '') ?>">
+                            value="<?= htmlspecialchars($equipo->numero_serie ?? '') ?>">
                 </div>
 
                 <div class="col-md-6">
                     <label for="estado" class="form-label">Estado <span class="text-danger">*</span></label>
-                    <select class="form-select" id="estado" name="estado" required>
+                    <select class="form-select" id="estado" name="estado" required
+                        data-bs-toggle="tooltip" data-bs-placement="top" title="Seleccione el estado del quipo. Es obligatorio.">
                         <option value="" <?= (!isset($equipo->estado) || $equipo->estado == '') ? 'selected' : '' ?>>Seleccione un estado...</option>
                         <option value="Activo" <?= (isset($equipo->estado) && $equipo->estado == 'Activo') ? 'selected' : '' ?>>Activo</option>
                         <option value="En Reparacion" <?= (isset($equipo->estado) && $equipo->estado == 'En Reparacion') ? 'selected' : '' ?>>En Reparación</option>
@@ -64,7 +76,7 @@
                 <div class="col-md-6">
                     <label for="fecha_adquisicion" class="form-label">Fecha de Adquisición</label>
                     <input type="date" class="form-control" id="fecha_adquisicion" name="fecha_adquisicion"
-                           value="<?= htmlspecialchars($equipo->fecha_adquisicion ?? '') ?>">
+                            value="<?= htmlspecialchars($equipo->fecha_adquisicion ?? '') ?>">
                 </div>
 
                 <div class="col-12">
