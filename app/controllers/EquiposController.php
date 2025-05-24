@@ -55,9 +55,7 @@
          */
         public function crear($params = null){
             // Obtener la lista de personal activo para el dropdown de asignación
-            $personalJson = $this->personalModelo->select(['id_empleado', 'nombre', 'apellido'])
-                                                // ->where([['activo', 1]]) // Si tienes un campo 'activo' en personal
-                                                ->get();
+            $personalJson = $this->personalModelo->obtenerPersonalParaAsignacion();
             $personal = json_decode($personalJson);
 
             $datosVista = [
