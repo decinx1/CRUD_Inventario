@@ -1,15 +1,11 @@
 <?php
     namespace app\models;
 
-    class equipo extends Model { // El nombre de la clase 'equipo' (minúscula) es para que coincida
-                                 // con cómo DB.php podría intentar derivar el nombre de la tabla.
-                                 // Si prefieres 'Equipo' (mayúscula), asegúrate de que DB.php
-                                 // lo maneje o define explícitamente $this->table_name = 'equipos';
+    class equipo extends Model { // Nombre de clase 'equipo' (minúscula)
+                                 // para que coincida con cómo DB.php deriva el nombre de la tabla.
 
-        // Opcional: Si el nombre de tu tabla es diferente al nombre de la clase (ej. 'equipos_computo')
-        // protected $table_name = 'equipos';
+        // protected $table_name = 'equipos'; // Opcional: si el nombre de la clase no coincide con la tabla.
 
-        // Lista de campos que se permitirían en una asignación masiva (actualmente no se usa para inserción/actualización directa con estos métodos).
         protected $fillable = [
             'tipo_equipo',
             'marca',
@@ -24,29 +20,239 @@
 
         public function __construct(){
             parent::__construct(); // Llama al constructor de Model (que llama al de DB)
-            // Esta línea asegura que la conexión esté disponible como $this->conex
-            // Si el constructor de DB ya hace $this->conex = new \mysqli(...),
-            // entonces $this->connect() podría no ser necesario aquí si ya se llamó.
-            // Es una buena práctica asegurarse de que $this->conex esté listo.
+            // Asegura que la conexión $this->conex esté lista.
             if (method_exists($this, 'connect') && (empty($this->conex) || $this->conex->connect_errno) ) {
                 $this->connect();
             }
         }
 
         /**
-         * Obtiene todos los equipos, opcionalmente uniéndolos con la tabla de personal
+         * Obtiene todos los equipos, uniéndolos con la tabla de personal
          * para obtener el nombre de la persona asignada.
-         * Usa sentencias preparadas implícitamente si no hay parámetros de usuario.
-         * @param bool $soloActivos Si es true y tienes un campo 'activo', filtra por él.
-         * @return string JSON con los equipos, o un JSON vacío si hay error/no hay datos.
+         * @return string JSON con los equipos, o un JSON con array vacío si hay error/no hay datos.
          */
-        public function obtenerTodosConNombrePersonal($soloActivos = false) { // Cambiado $soloActivos a false por defecto ya que no tienes campo 'activo' en tu tabla equipos del PDF
+        public function obtenerTodosConNombrePersonal() {
             if (empty($this->conex) || $this->conex->connect_errno) {
-                 // error_log("Conexión a BD no establecida en obtenerTodosConNombrePersonal");
+                error_log("EquipoModel: Conexión a BD no establecida en obtenerTodosConNombrePersonal");
                 return json_encode([]);
             }
 
-            // Base de la consulta
-            $sql = "SELECT e.*, CONCAT(p.nombre, ' ', p.apellido) as nombre_personal
+            $sql = "SELECT e.*, CONCAT(p.nombre, ' ', p.apellido) as nombre_personal, p.puesto as puesto_personal
                     FROM equipos e
-                    LEFT JOIN personal p ON 
+                    LEFT JOIN personal p ON e.Id_personal_asignado = p.id_empleado
+                    ORDER BY e.id_equipo DESC";
+            // Si tuvieras un campo 'activo' en la tabla 'equipos' para borrado lógico:
+            // $sql = "SELECT e.*, CONCAT(p.nombre, ' ', p.apellido) as nombre_personal, p.puesto as puesto_personal
+            //         FROM equipos e
+            //         LEFT JOIN personal p ON e.Id_personal_asignado = p.id_empleado
+            //         WHERE e.activo = 1
+            //         ORDER BY e.id_equipo DESC";
+
+            $stmt = $this->conex->prepare($sql);
+            if ($stmt === false) {
+                error_log("EquipoModel: Error al preparar la consulta (obtenerTodosConNombrePersonal): " . $this->conex->error);
+                return json_encode([]);
+            }
+
+            $stmt->execute();
+            $resultado = $stmt->get_result();
+            $datos = [];
+            while($fila = $resultado->fetch_assoc()){
+                $datos[] = $fila;
+            }
+            $stmt->close();
+            return json_encode($datos);
+        }
+
+        /**
+         * Obtiene un equipo específico por su ID, incluyendo el nombre del personal asignado.
+         * @param int $id El ID del equipo.
+         * @return string JSON con el equipo (dentro de un array), o un JSON con array vacío si no se encuentra o hay error.
+         */
+        public function obtenerPorIdConNombrePersonal($id) {
+            if (empty($this->conex) || $this->conex->connect_errno) {
+                error_log("EquipoModel: Conexión a BD no establecida en obtenerPorIdConNombrePersonal");
+                return json_encode([]);
+            }
+            $sql = "SELECT e.*, CONCAT(p.nombre, ' ', p.apellido) as nombre_personal, p.puesto as puesto_personal
+                    FROM equipos e
+                    LEFT JOIN personal p ON e.Id_personal_asignado = p.id_empleado
+                    WHERE e.id_equipo = ?";
+
+            $stmt = $this->conex->prepare($sql);
+            if ($stmt === false) {
+                error_log("EquipoModel: Error al preparar la consulta (obtenerPorIdConNombrePersonal): " . $this->conex->error);
+                return json_encode([]);
+            }
+            $stmt->bind_param('i', $id); // 'i' porque id_equipo es un entero
+            $stmt->execute();
+            $resultado = $stmt->get_result();
+            $dato = $resultado->fetch_assoc(); // Solo esperamos una fila
+            $stmt->close();
+            return json_encode($dato ? [$dato] : []); // Devuelve un array para consistencia si se encuentra
+        }
+
+        /**
+         * Crea un nuevo equipo en la base de datos usando sentencias preparadas.
+         * @param array $datos Array asociativo con los datos del equipo.
+         * Campos esperados: tipo_equipo, marca, modelo, numero_serie, estado,
+         * fecha_adquisicion (YYYY-MM-DD o null), Id_personal_asignado (int o null), notas.
+         * @return int|bool El ID del equipo insertado o false en caso de error.
+         */
+        public function crear($datos) {
+            if (empty($this->conex) || $this->conex->connect_errno) {
+                error_log("EquipoModel: Conexión a BD no establecida en crear");
+                return false;
+            }
+
+            // Definir los campos y sus tipos para el bind_param
+            // Asegúrate que el orden y los tipos coincidan con tu tabla y los datos que pasas
+            $columnasPermitidas = [
+                'tipo_equipo' => 's', 'marca' => 's', 'modelo' => 's', 'numero_serie' => 's',
+                'estado' => 's', 'fecha_adquisicion' => 's', 'Id_personal_asignado' => 'i', 'notas' => 's'
+            ];
+
+            $columnasSql = [];
+            $placeholdersSql = [];
+            $tiposBind = "";
+            $valoresBind = [];
+            $datosParaBind = []; // Array para almacenar los valores a los que se enlazarán las referencias
+
+            foreach ($columnasPermitidas as $columna => $tipo) {
+                if (array_key_exists($columna, $datos)) {
+                    $columnasSql[] = "`$columna`"; // Usar backticks para los nombres de columna
+                    $placeholdersSql[] = '?';
+                    $tiposBind .= $tipo;
+
+                    // Manejo especial para campos que pueden ser NULL
+                    if (($columna === 'Id_personal_asignado' || $columna === 'fecha_adquisicion' || $columna === 'numero_serie' || $columna === 'notas') &&
+                        ($datos[$columna] === '' || is_null($datos[$columna]))) {
+                        $datosParaBind[$columna] = null;
+                    } else {
+                        $datosParaBind[$columna] = $datos[$columna];
+                    }
+                    $valoresBind[] = &$datosParaBind[$columna]; // Pasar por referencia
+                }
+            }
+
+            if (empty($columnasSql)) {
+                error_log("EquipoModel: No hay datos válidos para crear el equipo.");
+                return false;
+            }
+
+            $sql = "INSERT INTO equipos (" . implode(", ", $columnasSql) . ") VALUES (" . implode(", ", $placeholdersSql) . ")";
+
+            $stmt = $this->conex->prepare($sql);
+            if ($stmt === false) {
+                error_log("EquipoModel: Error al preparar la consulta (crear equipo): " . $this->conex->error . " SQL: " . $sql);
+                return false;
+            }
+
+            call_user_func_array([$stmt, 'bind_param'], array_merge([$tiposBind], $valoresBind));
+
+            if ($stmt->execute()) {
+                $idInsertado = $this->conex->insert_id;
+                $stmt->close();
+                return $idInsertado;
+            } else {
+                error_log("EquipoModel: Error al ejecutar la consulta (crear equipo): " . $stmt->error);
+                $stmt->close();
+                return false;
+            }
+        }
+
+        /**
+         * Actualiza un equipo existente en la base de datos usando sentencias preparadas.
+         * @param int $id El ID del equipo a actualizar.
+         * @param array $datos Array asociativo con los nuevos datos del equipo.
+         * @return bool True si fue exitoso, false en caso de error.
+         */
+        public function actualizar($id, $datos) {
+            if (empty($this->conex) || $this->conex->connect_errno) {
+                error_log("EquipoModel: Conexión a BD no establecida en actualizar");
+                return false;
+            }
+
+            $setsSql = [];
+            $tiposBind = "";
+            $valoresBind = [];
+            $datosParaBind = []; // Array para almacenar los valores a los que se enlazarán las referencias
+
+            $columnasPermitidas = [
+                'tipo_equipo' => 's', 'marca' => 's', 'modelo' => 's', 'numero_serie' => 's',
+                'estado' => 's', 'fecha_adquisicion' => 's', 'Id_personal_asignado' => 'i', 'notas' => 's'
+            ];
+
+            foreach ($columnasPermitidas as $columna => $tipo) {
+                if (array_key_exists($columna, $datos)) {
+                    $setsSql[] = "`$columna` = ?";
+                    $tiposBind .= $tipo;
+                     if (($columna === 'Id_personal_asignado' || $columna === 'fecha_adquisicion' || $columna === 'numero_serie' || $columna === 'notas') &&
+                        ($datos[$columna] === '' || is_null($datos[$columna]))) {
+                        $datosParaBind[$columna] = null;
+                    } else {
+                        $datosParaBind[$columna] = $datos[$columna];
+                    }
+                    $valoresBind[] = &$datosParaBind[$columna];
+                }
+            }
+
+            if (empty($setsSql)) {
+                error_log("EquipoModel: No hay datos para actualizar el equipo.");
+                return true; // O false, dependiendo de si consideras "nada que actualizar" como un error.
+            }
+
+            $tiposBind .= 'i'; // Para el id_equipo en el WHERE
+            $datosParaBind['id_equipo_condicion'] = $id; // Usar una clave diferente para evitar colisión si 'id_equipo' está en $datos
+            $valoresBind[] = &$datosParaBind['id_equipo_condicion'];
+
+            $sql = "UPDATE equipos SET " . implode(", ", $setsSql) . " WHERE id_equipo = ?";
+
+            $stmt = $this->conex->prepare($sql);
+            if ($stmt === false) {
+                error_log("EquipoModel: Error al preparar la consulta (actualizar equipo): " . $this->conex->error . " SQL: " . $sql);
+                return false;
+            }
+
+            call_user_func_array([$stmt, 'bind_param'], array_merge([$tiposBind], $valoresBind));
+
+            $resultado = $stmt->execute();
+            if (!$resultado) {
+                error_log("EquipoModel: Error al ejecutar la consulta (actualizar equipo): " . $stmt->error);
+            }
+            $stmt->close();
+            return $resultado;
+        }
+
+        /**
+         * Elimina un equipo de la base de datos (borrado físico).
+         * Considera implementar borrado lógico cambiando un campo 'activo' a 0.
+         * @param int $id El ID del equipo a eliminar.
+         * @return bool True si fue exitoso, false en caso de error.
+         */
+        public function eliminar($id) {
+            if (empty($this->conex) || $this->conex->connect_errno) {
+                error_log("EquipoModel: Conexión a BD no establecida en eliminar");
+                return false;
+            }
+
+            // Para borrado lógico (si tienes un campo 'activo' en la tabla 'equipos'):
+            // return $this->actualizar($id, ['activo' => 0]);
+
+            $sql = "DELETE FROM equipos WHERE id_equipo = ?";
+            $stmt = $this->conex->prepare($sql);
+            if ($stmt === false) {
+                error_log("EquipoModel: Error al preparar la consulta (eliminar equipo): " . $this->conex->error);
+                return false;
+            }
+            $stmt->bind_param('i', $id);
+
+            $resultado = $stmt->execute();
+            if (!$resultado) {
+                error_log("EquipoModel: Error al ejecutar la consulta (eliminar equipo): " . $stmt->error);
+            }
+            $stmt->close();
+            return $resultado;
+        }
+    }
+?>

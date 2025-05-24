@@ -40,8 +40,9 @@
             $datosVista = [
                 'ua'      => auth\SessionController::sessionValidate() ?? (object)['sv' => 0], // Información de sesión del usuario
                 'title'   => 'Inventario de Equipos de Cómputo', // Título de la página
-                'equipos' => $equipos, // La lista de equipos
-                'url_base'=> URL     // La URL base definida en config.php para construir enlaces
+                'equipos'    => $equipos ?? [], // La lista de equipos
+                'url_base'=> URL,     // La URL base definida en config.php para construir enlaces
+                'active_nav' => 'equipos'// Resalta el en le menu 
             ];
 
             // Renderizar la vista para mostrar la lista de equipos
@@ -54,9 +55,7 @@
          */
         public function crear($params = null){
             // Obtener la lista de personal activo para el dropdown de asignación
-            $personalJson = $this->personalModelo->select(['id_empleado', 'nombre', 'apellido'])
-                                                // ->where([['activo', 1]]) // Si tienes un campo 'activo' en personal
-                                                 ->get();
+            $personalJson = $this->personalModelo->obtenerPersonalParaAsignacion();
             $personal = json_decode($personalJson);
 
             $datosVista = [
@@ -65,7 +64,8 @@
                 'equipo'    => null, // Se pasa null porque es un formulario para un nuevo equipo
                 'personal_disponible' => $personal, // Lista de personal para el <select>
                 'accion'    => URL . 'equipos/guardar', // La URL a la que el formulario enviará los datos
-                'url_base'  => URL
+                'url_base'  => URL,
+                'active_nav' => 'equipos'  // Resalta el en le menu 
             ];
             View::render('equipos/form', $datosVista); // Llama a la vista views/equipos/form.view.php
         }
@@ -149,7 +149,8 @@
                 'equipo'    => $equipo, // Los datos del equipo a editar
                 'personal_disponible' => $personal,
                 'accion'    => URL . 'equipos/actualizar/' . $idEquipo, // URL para enviar el formulario de actualización
-                'url_base'  => URL
+                'url_base'  => URL,
+                'active_nav' => 'equipos' // Resalta el en le menu 
             ];
             View::render('equipos/form', $datosVista); // Reutiliza la vista de formulario
         }
