@@ -19,7 +19,7 @@
                 </ul>
             </div>
 
-             <div class="col-lg-3 col-md-12 mb-4 mb-md-0 text-center text-lg-end">
+                <div class="col-lg-3 col-md-12 mb-4 mb-md-0 text-center text-lg-end">
                 <p class="mb-1 mt-lg-5">&copy; <?= date('Y') ?> Inventa Fácil</p>
                 <p class="small mb-0">
                     <a href="#" class="text-white-50">Política de Privacidad</a> |
