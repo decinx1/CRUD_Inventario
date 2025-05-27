@@ -145,3 +145,4 @@
     // 3. Incluir el pie de página
     include_once LAYOUTS . 'main_foot.php';
 ?>
+
