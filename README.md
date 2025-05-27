@@ -4,53 +4,66 @@ Proyecto universitario CRUD (Crear, Leer, Actualizar, Eliminar) para la gestión
 
 Estrucutra actual: 
 C:.
-│   app.php
-│   config.php
+│   .gitattributes
+│   .gitignore
+│   package-lock.json
+│   package.json
 │   README.md
-│
-└───app
-    ├───classes
-    │       Autoloader.php
-    │       DB.php
-    │
-    ├───controllers
-    │   │   Controller.php
-    │   │
-    │   └───auth
-    │           SessionController.php
-    │
-    ├───models
-    │       equipo.php
-    │       Model.php
-    │       personal.php
-    │
-    ├───public
-    │   │   .htaccess
-    │   │   index.php
-    │   │
-    │   └───assets
-    │       ├───css
-    │       │       bootstrap.css
-    │       │
-    │       └───js
-    │               app.js
-    │
-    └───resources
-        ├───functions
-        │       main_functions.php
-        │
-        ├───layouts
-        │       main_foot.php
-        │       main_head.php
-        │
-        └───views
-            ├───auth
-            │       inisession.view.php
-            │
-            ├───equipos
-            │       form.view.php
-            │       index.view.php
-            │
-            └───personal
-                    form.view.php
-                    index.view.php
+│   
+├───app
+│   │   app.php
+│   │   config.php
+│   │
+│   ├───classes
+│   │       Autoloader.php
+│   │       DB.php
+│   │       Redirect.php
+│   │       Router.php
+│   │       Views.php
+│   │
+│   ├───controllers
+│   │   │   Controller.php
+│   │   │   EquiposController.php
+│   │   │   HomeController.php
+│   │   │
+│   │   └───auth
+│   │           SessionController.php
+│   │
+│   ├───models
+│   │       equipo.php
+│   │       Model.php
+│   │       personal.php
+│   │
+│   ├───public
+│   │   │   .htaccess
+│   │   │   index.php
+│   │   │
+│   │   └───assets
+│   │       ├───css
+│   │       │       bootstrap.min.css
+│   │       │
+│   │       └───js
+│   │               app.js
+│   │               bootstrap.bundle.js
+│   │
+│   └───resources
+│       ├───functions
+│       │       main_functions.php
+│       │
+│       ├───layouts
+│       │       main_foot.php
+│       │       main_head.php
+│       │
+│       └───views
+│           │   home.view.php
+│           │
+│           ├───auth
+│           │       inisession.view.php
+│           │
+│           ├───equipos
+│           │       form.view.php
+│           │       index.view.php
+│           │
+│           └───personal
+│                   form.view.php
+│                   index.view.php
