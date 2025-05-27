@@ -40,6 +40,8 @@
 <script src="<?= JS_URL ?>bootstrap.js"></script>
 <script src="<?= JS_URL ?>sweetalert2.js"></script>
 <script src="<?= JS_URL ?>app.js"></script>
+<!-- Bootstrap Bundle JS (incluye Popper) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
