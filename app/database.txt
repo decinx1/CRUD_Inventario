@@ -1,0 +1,69 @@
+-- --------------------------------------------------------
+-- Base de Datos: `inventafacil`
+-- --------------------------------------------------------
+
+--
+-- Crear la base de datos si no existe
+-- (En phpMyAdmin, normalmente creas la base de datos primero a través de la interfaz)
+--
+-- CREATE DATABASE IF NOT EXISTS `inventafacil` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+-- USE `inventafacil`;
+
+-- --------------------------------------------------------
+-- Estructura de tabla para la tabla `personal`
+-- --------------------------------------------------------
+
+CREATE TABLE `personal` (
+  `id_empleado` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(100) NOT NULL,
+  `apellido` VARCHAR(100) NOT NULL,
+  `email` VARCHAR(255) NOT NULL,
+  `puesto` VARCHAR(100) NOT NULL,
+  `activo` TINYINT(1) NOT NULL DEFAULT 1,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_empleado`),
+  UNIQUE KEY `email_unique` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+-- Estructura de tabla para la tabla `usuarios`
+-- (Depende de la tabla `personal`)
+-- --------------------------------------------------------
+
+CREATE TABLE `usuarios` (
+  `id_usuario` INT NOT NULL AUTO_INCREMENT,
+  `nombre_usuario` VARCHAR(50) NOT NULL,
+  `contrasena_hash` VARCHAR(255) NOT NULL,
+  `Id_empleado` INT NOT NULL,
+  `activo` TINYINT(1) NOT NULL DEFAULT 1,
+  `fecha_creacion` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `ultimo_login` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`id_usuario`),
+  UNIQUE KEY `nombre_usuario_unique` (`nombre_usuario`),
+  KEY `fk_usuarios_personal` (`Id_empleado`),
+  CONSTRAINT `fk_usuarios_personal` FOREIGN KEY (`Id_empleado`) REFERENCES `personal` (`id_empleado`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+-- Estructura de tabla para la tabla `equipos`
+-- (Depende de la tabla `personal`)
+-- --------------------------------------------------------
+
+CREATE TABLE `equipos` (
+  `id_equipo` INT NOT NULL AUTO_INCREMENT,
+  `tipo_equipo` VARCHAR(50) NOT NULL,
+  `marca` VARCHAR(100) NOT NULL,
+  `modelo` VARCHAR(100) NOT NULL,
+  `numero_serie` VARCHAR(100) DEFAULT NULL,
+  `estado` VARCHAR(50) NOT NULL,
+  `fecha_adquisicion` DATE DEFAULT NULL,
+  `Id_personal_asignado` INT DEFAULT NULL,
+  `notas` TEXT DEFAULT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_equipo`),
+  UNIQUE KEY `numero_serie_unique` (`numero_serie`),
+  KEY `fk_equipos_personal` (`Id_personal_asignado`),
+  CONSTRAINT `fk_equipos_personal` FOREIGN KEY (`Id_personal_asignado`) REFERENCES `personal` (`id_empleado`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
