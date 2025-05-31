@@ -26,7 +26,7 @@ Este proyecto demuestra la aplicación práctica de un framework PHP MVC persona
 1.  **Clonar el Repositorio (Opcional):**
     Si tienes el proyecto en un repositorio Git:
     ```bash
-    git clone https://[URL-DE-TU-REPOSITORIO-EN-GITHUB].git CRUD_Inventario
+    git clone https://github.com/decinx1/CRUD_Inventario.git CRUD_Inventario
     ```
     Si no, simplemente descarga o copia los archivos del proyecto en tu máquina.
 
