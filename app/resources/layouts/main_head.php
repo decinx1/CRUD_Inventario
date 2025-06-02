@@ -45,6 +45,10 @@
             /* y ajustar el padding-top del body en consecuencia. */
         }
 
+        .offcanvas.offcanvas-start {
+            width: 250px; /* Ancho del sidebar */
+        }
+
         /* Estilos para el footer (aunque la mayoría se aplican con clases Bootstrap) */
         .footer {
             width: 100%; /* Asegura que ocupe todo el ancho */
@@ -67,10 +71,10 @@
         </header>
         <nav class="navbar navbar-expand-lg bg-dark bg-gradient mb-3" data-bs-theme="dark">
     <div class="container-fluid">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="collapse navbar-collapse d-none d-lg-flex" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                     <a class="nav-link <?= ($activeNav ?? '') === 'home' ? 'active' : '' ?>" aria-current="page" href="<?= URL ?>">
@@ -120,6 +124,43 @@
         </div>
     </div>
 </nav>
+<!-- Offcanvas Sidebar para menú responsive -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="sidebarMenuLabel">Menú</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+    </div>
+    <div class="offcanvas-body">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link <?= ($activeNav ?? '') === 'home' ? 'active' : '' ?>" href="<?= URL ?>"><i class="bi bi-house-fill"></i> Inicio</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link <?= ($activeNav ?? '') === 'equipos' ? 'active' : '' ?>" href="<?= URL ?>equipos"><i class="bi bi-pc-display"></i> Inventario de Equipos</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link <?= ($activeNav ?? '') === 'personal' ? 'active' : '' ?>" href="<?= URL ?>personal"><i class="bi bi-person-vcard-fill"></i> Personal</a>
+            </li>
+            <!-- Puedes agregar más enlaces aquí -->
+        </ul>
+        <hr>
+        <ul class="navbar-nav">
+            <?php if( !(isset($ua->sv) && $ua->sv) ) : ?>
+                <li class="nav-item">
+                    <a href="<?= URL ?>session/iniSession" class="nav-link <?= ($activeNav ?? '') === 'login' ? 'active' : '' ?>">
+                        <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                    </a>
+                </li>
+            <?php else : ?>
+                <li class="nav-item">
+                    <a href="<?= URL ?>session/logout" class="nav-link">
+                        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                    </a>
+                </li>
+            <?php endif; ?>
+        </ul>
+    </div>
+</div>
     </div>
 <?php
 } // Fin de la función setHeader
