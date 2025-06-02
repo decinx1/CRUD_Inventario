@@ -31,6 +31,7 @@
 <script src="<?= JS_URL ?>jquery.js"></script>
 <script src="<?= JS_URL ?>bootstrap.js"></script> <script src="<?= JS_URL ?>sweetalert2.js"></script>
 <script src="<?= JS_URL ?>app.js"></script>
+<script src="<?= JS_URL ?>bootstrap.bundle.js"></script>
 
 </body>
 </html>
