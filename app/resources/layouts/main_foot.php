@@ -16,11 +16,12 @@
                     <li><i class="bi bi-github"></i> <a href="https://github.com/decinx1" target="_blank" class="text-white-50">Decinx1 en GitHub</a></li> </ul>
             </div>
 
-            <div class="col-lg-3 col-md-12 mb-4 mb-md-0 text-center text-lg-end"> <p class="mb-1 small">&copy; <?= date('Y') ?> Inventa Fácil</p>
-                <p class="small mb-0">
-                    <a href="<?= URL ?>paginas/privacidad" class="text-white-50">Política de Privacidad</a> |
-                    <a href="#" class="text-white-50">Términos de Servicio</a>
-                </p>
+            <div class="col-lg-3 col-md-12 mb-4 mb-md-0 text-center text-lg-end ms-auto">
+            <p class="mb-1 small">&copy; <?= date('Y') ?> Inventa Fácil</p>
+            <p class="small mb-0">
+                <a href="<?= URL ?>paginas/privacidad" class="text-white-50">Política de Privacidad</a> |
+                <a href="<?= URL ?>paginas/terminos" class="text-white-50">Términos de Servicio</a> </p>
+        </div>
             </div>
         </div>
     </div>
