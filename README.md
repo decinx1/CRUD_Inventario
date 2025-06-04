@@ -1,4 +1,5 @@
 # CRUD_Inventario
+#Este proyecto sigue en elavoracion dentro de poco esta completamente terminado 
 
 # Inventa Fácil - CRUD de Gestión de Inventario
 
