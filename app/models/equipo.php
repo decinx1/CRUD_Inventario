@@ -1,10 +1,7 @@
 <?php
     namespace app\models;
 
-    class equipo extends Model { // Nombre de clase 'equipo' (minúscula)
-                                 // para que coincida con cómo DB.php deriva el nombre de la tabla.
-
-        // protected $table_name = 'equipos'; // Opcional: si el nombre de la clase no coincide con la tabla.
+    class equipo extends Model { 
 
         protected $fillable = [
             'tipo_equipo',
@@ -32,23 +29,16 @@
          * @return string JSON con los equipos, o un JSON con array vacío si hay error/no hay datos.
          */
         public function obtenerTodosConNombrePersonal() {
-            if (empty($this->conex) || $this->conex->connect_errno) {
-                error_log("EquipoModel: Conexión a BD no establecida en obtenerTodosConNombrePersonal");
-                return json_encode([]);
-            }
-
+            // ... (el código de este método que ya tienes) ...
+            // Solo una pequeña corrección en tu consulta SQL original:
+            // Quita los espacios extra antes de $stmt = ...
             $sql = "SELECT e.*, CONCAT(p.nombre, ' ', p.apellido) as nombre_personal, p.puesto as puesto_personal
                     FROM equipos e
                     LEFT JOIN personal p ON e.Id_personal_asignado = p.id_empleado
-                    ORDER BY e.id_equipo DESC";
-            // Si tuvieras un campo 'activo' en la tabla 'equipos' para borrado lógico:
-            // $sql = "SELECT e.*, CONCAT(p.nombre, ' ', p.apellido) as nombre_personal, p.puesto as puesto_personal
-            //         FROM equipos e
-            //         LEFT JOIN personal p ON e.Id_personal_asignado = p.id_empleado
-            //         WHERE e.activo = 1
-            //         ORDER BY e.id_equipo DESC";
+                    ORDER BY e.id_equipo DESC"; // Añadido ORDER BY para consistencia
 
             $stmt = $this->conex->prepare($sql);
+
             if ($stmt === false) {
                 error_log("EquipoModel: Error al preparar la consulta (obtenerTodosConNombrePersonal): " . $this->conex->error);
                 return json_encode([]);
@@ -90,6 +80,54 @@
             $dato = $resultado->fetch_assoc(); // Solo esperamos una fila
             $stmt->close();
             return json_encode($dato ? [$dato] : []); // Devuelve un array para consistencia si se encuentra
+        }
+        /**
+         * Busca equipos en la base de datos por un término dado.
+         * Realiza una búsqueda LIKE en varios campos y devuelve los resultados.
+         * Utiliza sentencias preparadas para evitar inyecciones SQL.
+         * 
+         * @param string $termino El término de búsqueda. Puede ser parte del tipo, marca, modelo, número de serie, estado o nombre del personal asignado
+         * @return string JSON con los equipos encontrados, o un JSON vacío.
+         */
+        public function buscarEquipos($termino) {
+            if (empty($this->conex) || $this->conex->connect_errno) {
+                error_log("EquipoModel: Conexión BD no establecida - buscarEquipos");
+                return json_encode([]);
+            }
+
+            // Añadir los comodines % para la búsqueda LIKE
+            $terminoLike = "%" . $termino . "%";
+
+            // La consulta busca en varios campos usando OR y hace el JOIN a personal
+            $sql = "SELECT e.*, CONCAT(p.nombre, ' ', p.apellido) as nombre_personal, p.puesto as puesto_personal
+                    FROM equipos e
+                    LEFT JOIN personal p ON e.Id_personal_asignado = p.id_empleado
+                    WHERE (e.tipo_equipo LIKE ? OR 
+                            e.marca LIKE ? OR 
+                            e.modelo LIKE ? OR 
+                            e.numero_serie LIKE ? OR
+                            e.estado LIKE ? OR
+                            CONCAT(p.nombre, ' ', p.apellido) LIKE ?)";
+            $sql .= " ORDER BY e.id_equipo DESC";
+
+            $stmt = $this->conex->prepare($sql);
+            if ($stmt === false) {
+                error_log("EquipoModel: Error al preparar consulta (buscarEquipos): " . $this->conex->error . " SQL: " . $sql);
+                return json_encode([]);
+            }
+
+            // Vincular el mismo parámetro a todos los placeholders (?)
+            // "ssssss" porque hay 6 placeholders y todos son strings para LIKE
+            $stmt->bind_param('ssssss', $terminoLike, $terminoLike, $terminoLike, $terminoLike, $terminoLike, $terminoLike);
+            
+            $stmt->execute();
+            $resultado = $stmt->get_result();
+            $datos = [];
+            while($fila = $resultado->fetch_assoc()){
+                $datos[] = $fila;
+            }
+            $stmt->close();
+            return json_encode($datos);
         }
 
         /**
@@ -187,7 +225,7 @@
                 if (array_key_exists($columna, $datos)) {
                     $setsSql[] = "`$columna` = ?";
                     $tiposBind .= $tipo;
-                     if (($columna === 'Id_personal_asignado' || $columna === 'fecha_adquisicion' || $columna === 'numero_serie' || $columna === 'notas') &&
+                    if (($columna === 'Id_personal_asignado' || $columna === 'fecha_adquisicion' || $columna === 'numero_serie' || $columna === 'notas') &&
                         ($datos[$columna] === '' || is_null($datos[$columna]))) {
                         $datosParaBind[$columna] = null;
                     } else {

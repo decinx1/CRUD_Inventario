@@ -46,6 +46,16 @@
             View::render('equipos/index', $datosVista);
         }
 
+        public function buscar($params = null) {
+            // Obtener el término de búsqueda de la URL (?termino=...)
+            $termino = filter_input(INPUT_GET, 'termino', FILTER_SANITIZE_SPECIAL_CHARS);
+            $termino = trim($termino ?? '');
+
+            // Pasamos el término al método index para que se encargue de la lógica y renderizado.
+            // Esto reutiliza la vista index.view.php
+            $this->index(['termino_busqueda' => $termino]);
+        }
+
         /**
          * Muestra el formulario para crear un nuevo equipo.
          */
@@ -91,7 +101,7 @@
                 $resultado = $this->equipoModelo->crear($datosEquipo);
 
                 if ($resultado === 'error_duplicado') {
-                     Redirect::to(URL . 'equipos/crear?error=Numero_de_serie_ya_existe');
+                    Redirect::to(URL . 'equipos/crear?error=Numero_de_serie_ya_existe');
                 } elseif ($resultado) { // $resultado es el ID del nuevo equipo
                     Redirect::to(URL . 'equipos?exito=Equipo_creado_exitosamente');
                 } else {
@@ -167,7 +177,7 @@
             $resultado = $this->equipoModelo->actualizar((int)$idEquipo, $datosEquipo);
 
             if ($resultado === 'error_duplicado_ns_actualizar') { // Suponiendo que el modelo puede devolver esto
-                 Redirect::to(URL . 'equipos/editar/' . $idEquipo . '?error=Numero_de_serie_ya_existe_en_otro_equipo');
+                Redirect::to(URL . 'equipos/editar/' . $idEquipo . '?error=Numero_de_serie_ya_existe_en_otro_equipo');
             } elseif ($resultado) {
                 Redirect::to(URL . 'equipos?exito=Equipo_actualizado_exitosamente');
             } else {

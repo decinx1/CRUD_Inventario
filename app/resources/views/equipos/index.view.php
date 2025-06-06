@@ -1,10 +1,7 @@
 <?php
-    // Ubicación: TU_PROYECTO_RAIZ/app/resources/views/equipos/index.view.php
-
-
+    // 1. Incluir la cabecera
     include_once LAYOUTS . 'main_head.php';
     setHeader($d);
-
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-3 pt-3">
@@ -14,9 +11,15 @@
         </a>
     </div>
 
+    <?php if (!empty($d->termino_busqueda_actual)): ?>
+        <div class="alert alert-secondary" role="alert">
+            Mostrando resultados para: <strong><?= htmlspecialchars($d->termino_busqueda_actual) ?></strong>.
+            <a href="<?= htmlspecialchars($d->url_base ?? URL) ?>equipos" class="alert-link ms-2">Limpiar búsqueda y ver todos</a>
+        </div>
+    <?php endif; ?>
     <?php if (isset($_GET['exito'])): ?>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            Equipo <?= htmlspecialchars($_GET['exito']) ?> exitosamente.
+            Acción realizada exitosamente: <?= htmlspecialchars($_GET['exito']) ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     <?php endif; ?>

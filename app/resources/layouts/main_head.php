@@ -63,9 +63,11 @@
             <div class="col-9">
                 <h1 class="ml-3 mt-2 text-primary">Inventa Fácil</h1> </div>
             <div class="col-3 mt-2">
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" id="buscar-palabra" type="search" placeholder="Buscar" aria-label="Search">
-                    <button class="btn btn-outline-success" onclick="" type="button"><i class="bi bi-search"></i></button>
+                <form class="d-flex w-100" role="search" method="GET" action="<?= htmlspecialchars($urlBase ?? URL) ?>equipos/buscar">
+                    <input class="form-control form-control-sm me-2" name="termino" type="search" 
+                        placeholder="Buscar en equipos..." aria-label="Search"
+                        value="<?= htmlspecialchars($_GET['termino'] ?? '') // Mantiene el término en el campo ?>">
+                    <button class="btn btn-sm btn-outline-success" type="submit"><i class="bi bi-search"></i></button>
                 </form>
             </div>
         </header>
